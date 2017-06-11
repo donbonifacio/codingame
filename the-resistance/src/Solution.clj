@@ -1,12 +1,8 @@
 (ns Solution
   (:gen-class))
 
-(def morse-table {\A ".-"
-                  \B "-..."
-                  \C "-.-."
-                  \D "-.."
-                  \E ".-"
-                  \F "..-." \G "--." \H  "...."
+(def morse-table {\A ".-" \B "-..." \C "-.-." \D "-.."
+                  \E ".-" \F "..-." \G "--." \H  "...."
                   \I "..-." \J ".---" \K "-.-." \L ".-.."
                   \M "--." \N "-..." \O "---" \P ".--."
                   \Q "--.-" \R ".-.." \S "..." \T "-"
@@ -22,12 +18,46 @@
 (defn log
   [msg]
   (binding [*out* *err*]
-    (println "Debug messages...")))
+    (println msg)))
+
+(defn possible-starting-words
+  "Given a morse sequence string, and a morse encoded collection of words,
+  returns all words that may start the given sequence."
+  [morse-sequence morse-words]
+  (reduce (fn [starting-words curr]
+            (if (clojure.string/starts-with? morse-sequence curr)
+              (conj starting-words curr)
+              starting-words))
+          []
+          morse-words))
+
+(defn remove-starting-word
+  [morse-sequence word]
+  (clojure.string/replace-first morse-sequence
+                               (re-pattern word)
+                               ""))
+
+(defn possible-word-sequences
+  [morse-sequence morse-words]
+  (let [starting-words (possible-starting-words morse-sequence morse-words)]
+    (->> starting-words
+         (map (fn [word]
+                 (let [new-morse-sequence (remove-starting-word morse-sequence word)
+                       child-messages (possible-word-sequences new-morse-sequence morse-words)]
+                   (if (zero? child-messages)
+                     1
+                     child-messages)
+                     )))
+        (reduce +))))
 
 (defn number-of-possible-messages
   [morse-sequence dictionary-words]
-  0
-  )
+  (let [morse-words (map morse dictionary-words)]
+    (cond
+      (= (first morse-words) morse-sequence) 1
+      (= (clojure.string/join "" morse-words) morse-sequence) 1
+      :else 0)
+    ))
 
 (defn load-dictionary-from-stdin
   [dictionary-size]
