@@ -4,14 +4,14 @@
 
 (def morse solution/morse)
 
-#_(deftest example-test
+(deftest example-test
   (let [morse-sequence "......-...-..---.-----.-..-..-.."
         dictionary ["HELL"
                     "HELLO"
                     "OWORLD"
                     "WORLD"
                     "TEST"]]
-    (is (= 2 (solution/possible-word-sequences morse-sequence (map morse dictionary))))))
+    (is (= 2 (solution/possible-word-sequences morse-sequence (map morse dictionary) true)))))
 
 (deftest simplified-example-HELLO-test
   (let [morse-sequence (solution/morse "HELLO")
@@ -29,10 +29,14 @@
     (is (= 2 (solution/number-of-possible-messages morse-sequence dictionary)))))
 
 (deftest spaceless-message-test
-  (is (= (morse "HELLO") ".....-.-...-..---"))
-  (is (= (morse "HELLO" " ") ".... .- .-.. .-.. ---")))
+  (is (= (morse "HELLO") "......-...-..---"))
+  (is (= (morse "HELLO" " ") ".... . .-.. .-.. ---")))
 
 (deftest possible-starting-words-test
+  (is (= [(morse "HELL")]
+         (solution/possible-starting-words
+           (morse "HELLO")
+           [(morse "HELL")])))
   (is (= [(morse "HELLO") (morse "HELL")]
          (solution/possible-starting-words
            (morse "HELLOBABE")

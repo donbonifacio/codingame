@@ -2,30 +2,33 @@
   (:gen-class))
 
 (def morse-table {\A ".-" \B "-..." \C "-.-." \D "-.."
-                  \E ".-" \F "..-." \G "--." \H  "...."
-                  \I "..-." \J ".---" \K "-.-." \L ".-.."
-                  \M "--." \N "-..." \O "---" \P ".--."
-                  \Q "--.-" \R ".-.." \S "..." \T "-"
-                  \U "..-." \V "...-" \W ".---" \X "-..-"
+                  \E "." \F "..-." \G "--." \H  "...."
+                  \I ".." \J ".---" \K "-.-" \L ".-.."
+                  \M "--" \N "-." \O "---" \P ".--."
+                  \Q "--.-" \R ".-." \S "..." \T "-"
+                  \U "..-" \V "...-" \W ".--" \X "-..-"
                   \Y "-.--" \Z "--.."})
 
 (defn morse
   ([text]
    (morse text ""))
   ([text sep]
-   (clojure.string/join sep (map #(get morse-table %) text))))
+   (clojure.string/join sep (map #(get morse-table %) (str text)))))
 
 (defn log
   [msg]
   (binding [*out* *err*]
     (println msg)))
 
+(defn starts-with? [s needle]
+  (.startsWith (.toString s) needle))
+
 (defn possible-starting-words
   "Given a morse sequence string, and a morse encoded collection of words,
   returns all words that may start the given sequence."
   [morse-sequence morse-words]
   (reduce (fn [starting-words curr]
-            (if (clojure.string/starts-with? morse-sequence curr)
+            (if (starts-with? morse-sequence curr)
               (conj starting-words curr)
               starting-words))
           []
@@ -38,17 +41,23 @@
                                ""))
 
 (defn possible-word-sequences
-  [morse-sequence morse-words]
-  (let [starting-words (possible-starting-words morse-sequence morse-words)]
-    (->> starting-words
-         (map (fn [word]
-                 (let [new-morse-sequence (remove-starting-word morse-sequence word)
-                       child-messages (possible-word-sequences new-morse-sequence morse-words)]
-                   (if (zero? child-messages)
-                     1
-                     child-messages)
-                     )))
-        (reduce +))))
+  ([morse-sequence morse-words]
+   (possible-word-sequences morse-sequence morse-words false))
+  ([morse-sequence morse-words verbose]
+   (let [starting-words (possible-starting-words morse-sequence morse-words)]
+     (when verbose
+       (println "-- Starting words: " starting-words))
+     (->> starting-words
+          (map (fn [word]
+                  (let [new-morse-sequence (remove-starting-word morse-sequence word)
+                        child-messages (possible-word-sequences new-morse-sequence morse-words)]
+                    (when verbose
+                      (println word " -> " new-morse-sequence " : " child-messages))
+                    (if (zero? child-messages)
+                      1
+                      child-messages)
+                      )))
+         (reduce +)))))
 
 (defn number-of-possible-messages
   [morse-sequence dictionary-words]
@@ -70,4 +79,6 @@
 
 (defn -main [& args]
   (let [L (read) N (read)]
-    (println (number-of-possible-messages L (load-dictionary-from-stdin N)))))
+    (println (possible-word-sequences
+               L
+               (map morse (load-dictionary-from-stdin N))))))
