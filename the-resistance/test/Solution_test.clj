@@ -2,7 +2,7 @@
   (:require [clojure.test :refer :all]
             [Solution :as solution]))
 
-(deftest example-test
+#_(deftest example-test
   (let [morse-sequence "......-...-..---.-----.-..-..-.."
         dictionary ["HELL"
                     "HELLO"
@@ -10,3 +10,7 @@
                     "WORLD"
                     "TEST"]]
     (is (= 2 (solution/number-of-possible-messages morse-sequence dictionary)))))
+
+(deftest spaceless-message-test
+  (is (= (solution/morse "HELLO") ".....-.-...-..---"))
+  (is (= (solution/morse "HELLO" " ") ".... .- .-.. .-.. ---")))

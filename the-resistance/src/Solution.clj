@@ -1,6 +1,24 @@
 (ns Solution
   (:gen-class))
 
+(def morse-table {\A ".-"
+                  \B "-..."
+                  \C "-.-."
+                  \D "-.."
+                  \E ".-"
+                  \F "..-." \G "--." \H  "...."
+                  \I "..-." \J ".---" \K "-.-." \L ".-.."
+                  \M "--." \N "-..." \O "---" \P ".--."
+                  \Q "--.-" \R ".-.." \S "..." \T "-"
+                  \U "..-." \V "...-" \W ".---" \X "-..-"
+                  \Y "-.--" \Z "--.."})
+
+(defn morse
+  ([text]
+   (morse text ""))
+  ([text sep]
+   (clojure.string/join sep (map #(get morse-table %) text))))
+
 (defn log
   [msg]
   (binding [*out* *err*]
