@@ -11,7 +11,35 @@
                     "OWORLD"
                     "WORLD"
                     "TEST"]]
-    (is (= 2 (solution/possible-word-sequences morse-sequence (map morse dictionary) true)))))
+    (is (= 2 (solution/possible-word-sequences morse-sequence (map morse dictionary) false)))))
+
+(deftest test-01
+  (let [morse-sequence "-.-"
+        dictionary ["A"
+                    "B"
+                    "C"
+                    "HELLO"
+                    "K"
+                    "WORLD"]]
+    (is (= 1 (solution/possible-word-sequences morse-sequence (map morse dictionary))))))
+
+(deftest test-02
+  (let [morse-sequence "--.-------.."
+        dictionary ["GOD"
+                    "GOOD"
+                    "MORNING"
+                    "G"
+                    "HELLO"]]
+    (is (= 1 (solution/possible-word-sequences morse-sequence (map morse dictionary) false)))))
+
+(deftest test-03
+  (let [morse-sequence "......-...-..---.-----.-..-..-.."
+        dictionary ["HELL"
+                    "HELLO"
+                    "OWORLD"
+                    "WORLD"
+                    "TEST"]]
+    (is (= 2 (solution/possible-word-sequences morse-sequence (map morse dictionary) false)))))
 
 (deftest simplified-example-HELLO-test
   (let [morse-sequence (solution/morse "HELLO")

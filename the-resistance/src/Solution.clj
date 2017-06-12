@@ -46,16 +46,21 @@
   ([morse-sequence morse-words verbose]
    (let [starting-words (possible-starting-words morse-sequence morse-words)]
      (when verbose
-       (println "-- Starting words: " starting-words))
+       (println "Sequence: " morse-sequence)
+       (println "Starting words: " starting-words))
      (->> starting-words
           (map (fn [word]
                   (let [new-morse-sequence (remove-starting-word morse-sequence word)
-                        child-messages (possible-word-sequences new-morse-sequence morse-words)]
+                        child-messages (possible-word-sequences new-morse-sequence morse-words verbose)]
                     (when verbose
                       (println word " -> " new-morse-sequence " : " child-messages))
-                    (if (zero? child-messages)
-                      1
-                      child-messages)
+                    (cond
+                      ;; no childs down the line that match
+                      (and (zero? child-messages) (not (empty? new-morse-sequence))) 0
+                      ;; has a complete child tree
+                      (zero? child-messages) 1
+                      ;; has several complete child trees
+                      :else child-messages)
                       )))
          (reduce +)))))
 
