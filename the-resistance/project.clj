@@ -8,6 +8,8 @@
   :aliases {"autotest" ["trampoline" "with-profile" "+test,+test-deps" "test-refresh"]
             "test"  ["trampoline" "with-profile" "+test,+test-deps" "test"]}
 
+  :main Solution
+
   :profiles {:uberjar {:aot :all}
              :test-deps {:dependencies [[org.clojure/tools.namespace "0.2.11"]]
 

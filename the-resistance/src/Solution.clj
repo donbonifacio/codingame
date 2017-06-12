@@ -83,7 +83,8 @@
         (recur (dec i) (conj words W))))))
 
 (defn -main [& args]
-  (let [L (read) N (read)]
+  (let [L (read)
+        N (read)]
     (println (possible-word-sequences
                L
                (map morse (load-dictionary-from-stdin N))))))
