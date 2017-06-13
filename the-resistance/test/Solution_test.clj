@@ -41,21 +41,6 @@
                     "TEST"]]
     (is (= 2 (solution/possible-word-sequences morse-sequence (map morse dictionary) false)))))
 
-(deftest simplified-example-HELLO-test
-  (let [morse-sequence (solution/morse "HELLO")
-        dictionary ["HELLO"]]
-    (is (= 1 (solution/number-of-possible-messages morse-sequence dictionary)))))
-
-(deftest simplified-example-HELLO-WORLD-test
-  (let [morse-sequence (solution/morse "HELLOWORLD")
-        dictionary ["HELLO" "WORLD"]]
-    (is (= 1 (solution/number-of-possible-messages morse-sequence dictionary)))))
-
-#_(deftest simplified-example-HELLO-WORLD-test
-  (let [morse-sequence (solution/morse "HELLOWORLD")
-        dictionary ["HELLO" "WORLD" "HELL" "OWORLD"]]
-    (is (= 2 (solution/number-of-possible-messages morse-sequence dictionary)))))
-
 (deftest spaceless-message-test
   (is (= (morse "HELLO") "......-...-..---"))
   (is (= (morse "HELLO" " ") ".... . .-.. .-.. ---")))

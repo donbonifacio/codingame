@@ -1,6 +1,17 @@
 (ns Solution
   (:gen-class))
 
+(def branch-counter (atom 0))
+
+(defmacro time-info
+  "This is a copy of the time macro of std clojure. It adds an addition
+  string label and outputs it."
+  [info expr]
+  `(let [start# (. System (nanoTime))
+         ret# ~expr]
+     (println (str ~info ": " (/ (double (- (. System (nanoTime)) start#)) 1000000.0)))
+     ret#))
+
 (def morse-table {\A ".-" \B "-..." \C "-.-." \D "-.."
                   \E "." \F "..-." \G "--." \H  "...."
                   \I ".." \J ".---" \K "-.-" \L ".-.."
@@ -46,14 +57,15 @@
   ([morse-sequence morse-words verbose]
    (let [starting-words (possible-starting-words morse-sequence morse-words)]
      (when verbose
-       (println "Sequence: " morse-sequence)
-       (println "Starting words: " starting-words))
+       (swap! branch-counter inc)
+       #_(println "Sequence: " morse-sequence)
+       (println "Starting words: " (count starting-words) "/" @branch-counter))
      (->> starting-words
           (map (fn [word]
                   (let [new-morse-sequence (remove-starting-word morse-sequence word)
                         child-messages (possible-word-sequences new-morse-sequence morse-words verbose)]
                     (when verbose
-                      (println word " -> " new-morse-sequence " : " child-messages))
+                      #_(println word " -> " new-morse-sequence " : " child-messages))
                     (cond
                       ;; no childs down the line that match
                       (and (zero? child-messages) (not (empty? new-morse-sequence))) 0
@@ -63,15 +75,6 @@
                       :else child-messages)
                       )))
          (reduce +)))))
-
-(defn number-of-possible-messages
-  [morse-sequence dictionary-words]
-  (let [morse-words (map morse dictionary-words)]
-    (cond
-      (= (first morse-words) morse-sequence) 1
-      (= (clojure.string/join "" morse-words) morse-sequence) 1
-      :else 0)
-    ))
 
 (defn load-dictionary-from-stdin
   [dictionary-size]
@@ -83,8 +86,12 @@
         (recur (dec i) (conj words W))))))
 
 (defn -main [& args]
-  (let [L (read)
-        N (read)]
+  (let [morse-sequence (read)
+        n-words (read)
+        dictionary (time-info "Load dictionary" (load-dictionary-from-stdin n-words))
+        morse-dictionary (time-info "Convert dictionary to morse" (doall (map morse dictionary)))]
+    (log morse-sequence)
+    (log (str "Dictionary words: " (count morse-dictionary)))
     (println (possible-word-sequences
-               L
-               (map morse (load-dictionary-from-stdin N))))))
+               morse-sequence
+               morse-dictionary true))))
