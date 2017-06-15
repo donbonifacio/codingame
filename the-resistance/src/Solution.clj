@@ -1,6 +1,9 @@
 (ns Solution
   (:gen-class))
 
+(set! *warn-on-reflection* true)
+(set! *unchecked-math* true)
+
 (def branch-counter (atom 0))
 
 (defmacro time-info
@@ -31,50 +34,38 @@
   (binding [*out* *err*]
     (println msg)))
 
-(defn starts-with? [s needle]
-  (.startsWith (.toString s) needle))
+(defn word-match [morse-sequence word idx]
+  (loop [word-idx 0
+         morse-idx idx]
+    (cond
+      (>= word-idx (count word))
+        (+ idx word-idx)
+      (>= morse-idx (count morse-sequence))
+        -2
+      (not= (nth morse-sequence morse-idx) (nth word word-idx))
+        -1
+      :else
+        (recur (inc word-idx) (inc morse-idx)))))
 
-(defn possible-starting-words
-  "Given a morse sequence string, and a morse encoded collection of words,
-  returns all words that may start the given sequence."
-  [morse-sequence morse-words]
-  (reduce (fn [starting-words curr]
-            (if (starts-with? morse-sequence curr)
-              (conj starting-words curr)
-              starting-words))
-          []
-          morse-words))
-
-(defn remove-starting-word
-  [morse-sequence word]
-  (clojure.string/replace-first morse-sequence
-                               (re-pattern word)
-                               ""))
-
-(defn possible-word-sequences
-  ([morse-sequence morse-words]
-   (possible-word-sequences morse-sequence morse-words false))
-  ([morse-sequence morse-words verbose]
-   (let [starting-words (possible-starting-words morse-sequence morse-words)]
-     (when verbose
-       (swap! branch-counter inc)
-       #_(println "Sequence: " morse-sequence)
-       (println "Starting words: " (count starting-words) "/" @branch-counter))
-     (->> starting-words
-          (map (fn [word]
-                  (let [new-morse-sequence (remove-starting-word morse-sequence word)
-                        child-messages (possible-word-sequences new-morse-sequence morse-words verbose)]
-                    (when verbose
-                      #_(println word " -> " new-morse-sequence " : " child-messages))
-                    (cond
-                      ;; no childs down the line that match
-                      (and (zero? child-messages) (not (empty? new-morse-sequence))) 0
-                      ;; has a complete child tree
-                      (zero? child-messages) 1
-                      ;; has several complete child trees
-                      :else child-messages)
-                      )))
-         (reduce +)))))
+(defn morse-counter
+  ([^String morse-sequence ^long curr-idx dictionary]
+   (loop [words dictionary
+         counter 0]
+     (if (not (seq words))
+       counter
+       (let [word (first words)
+             ^long next-idx (word-match morse-sequence word curr-idx)]
+         (cond
+           (= next-idx (count morse-sequence))
+            (do
+              (println (swap! branch-counter inc))
+             1)
+ 
+           (neg? next-idx)
+             (recur (rest words) counter)
+ 
+           :else
+             (recur (rest words) (+ counter (morse-counter morse-sequence next-idx dictionary)))))))))
 
 (defn load-dictionary-from-stdin
   [dictionary-size]
@@ -92,6 +83,7 @@
         morse-dictionary (time-info "Convert dictionary to morse" (doall (map morse dictionary)))]
     (log morse-sequence)
     (log (str "Dictionary words: " (count morse-dictionary)))
-    (println (possible-word-sequences
-               morse-sequence
-               morse-dictionary true))))
+    (println (morse-counter
+               (str morse-sequence)
+               0
+               morse-dictionary))))

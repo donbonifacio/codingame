@@ -11,7 +11,7 @@
                     "OWORLD"
                     "WORLD"
                     "TEST"]]
-    (is (= 2 (solution/possible-word-sequences morse-sequence (map morse dictionary) false)))))
+    (is (= 2 (solution/morse-counter morse-sequence 0 (map morse dictionary))))))
 
 (deftest test-01
   (let [morse-sequence "-.-"
@@ -21,7 +21,7 @@
                     "HELLO"
                     "K"
                     "WORLD"]]
-    (is (= 1 (solution/possible-word-sequences morse-sequence (map morse dictionary))))))
+    (is (= 1 (solution/morse-counter morse-sequence 0 (map morse dictionary))))))
 
 (deftest test-02
   (let [morse-sequence "--.-------.."
@@ -30,7 +30,7 @@
                     "MORNING"
                     "G"
                     "HELLO"]]
-    (is (= 1 (solution/possible-word-sequences morse-sequence (map morse dictionary) false)))))
+    (is (= 1 (solution/morse-counter morse-sequence 0 (map morse dictionary))))))
 
 (deftest test-03
   (let [morse-sequence "......-...-..---.-----.-..-..-.."
@@ -39,26 +39,17 @@
                     "OWORLD"
                     "WORLD"
                     "TEST"]]
-    (is (= 2 (solution/possible-word-sequences morse-sequence (map morse dictionary) false)))))
+    (is (= 2 (solution/morse-counter morse-sequence 0 (map morse dictionary))))))
 
 (deftest spaceless-message-test
   (is (= (morse "HELLO") "......-...-..---"))
   (is (= (morse "HELLO" " ") ".... . .-.. .-.. ---")))
 
-(deftest possible-starting-words-test
-  (is (= [(morse "HELL")]
-         (solution/possible-starting-words
-           (morse "HELLO")
-           [(morse "HELL")])))
-  (is (= [(morse "HELLO") (morse "HELL")]
-         (solution/possible-starting-words
-           (morse "HELLOBABE")
-           [(morse "HELLO") (morse "HELL")]))))
-
 (defn test-possible-n [expected-n text dictionary]
   (is (= expected-n
-         (solution/possible-word-sequences
+         (solution/morse-counter
            (morse text)
+           0
            (map morse dictionary)))))
 
 (deftest possible-words-test
@@ -68,3 +59,18 @@
     (test-possible-n 1 "HELLOWORLDTEST" ["HELLO" "WORLD" "TEST"]))
   (testing "simple branch"
     (test-possible-n 2 "HELLOWORLD" ["HELLO" "WORLD" "HELL" "OWORLD"])))
+
+(deftest word-match-test
+  (is (= 4 (solution/word-match "HELLO" "HELL" 0)))
+  (is (= -2 (solution/word-match "HELL" "HELLO" 0)))
+
+  (is (= -1 (solution/word-match "HELLO" "WAZA" 0)))
+
+  (is (= 5 (solution/word-match "HELLOWORLD" "HELLO" 0)))
+  (is (= (count "HELLOWORLD") (solution/word-match "HELLOWORLD" "WORLD" 5))))
+
+(deftest morse-counter-test
+  (is (= 2 (solution/morse-counter (morse "HELLOWORLD")
+                                   0
+                                   (map morse ["HELLO" "WORLD"
+                                               "HELL" "OWORLD"])))))
