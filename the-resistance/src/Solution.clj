@@ -34,7 +34,7 @@
   (binding [*out* *err*]
     (println msg)))
 
-(defn word-match [morse-sequence word idx]
+(defn word-match [^String morse-sequence word ^long idx]
   (loop [word-idx 0
          morse-idx idx]
     (cond
@@ -58,7 +58,7 @@
          (cond
            (= next-idx (count morse-sequence))
             (do
-              (println (swap! branch-counter inc))
+              #_(println (swap! branch-counter inc))
              1)
  
            (neg? next-idx)
@@ -76,11 +76,17 @@
       (let [W (read)]
         (recur (dec i) (conj words W))))))
 
+(defn index-dictionary [words]
+  (reduce (fn [indexed word]
+            (assoc-in indexed (conj (vec word) :word?) true))
+          {}
+          words))
+
 (defn -main [& args]
   (let [morse-sequence (read)
         n-words (read)
         dictionary (time-info "Load dictionary" (load-dictionary-from-stdin n-words))
-        morse-dictionary (time-info "Convert dictionary to morse" (doall (map morse dictionary)))]
+        morse-dictionary (time-info "Convert dictionary to morse" (index-dictionary (map morse dictionary)))]
     (log morse-sequence)
     (log (str "Dictionary words: " (count morse-dictionary)))
     (println (morse-counter

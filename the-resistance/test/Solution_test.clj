@@ -74,3 +74,9 @@
                                    0
                                    (map morse ["HELLO" "WORLD"
                                                "HELL" "OWORLD"])))))
+
+(deftest index-dictionary-test
+  (let [index (solution/index-dictionary ["HELLO" "HELL"])]
+    (is (not (get-in index [\H \E :word?])))
+    (is (true? (get-in index [\H \E \L \L :word?])))
+    (is (true? (get-in index [\H \E \L \L \O :word?])))))
