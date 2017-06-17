@@ -45,39 +45,25 @@
                     "TEST"]]
     (is (= 2 (solution/indexed-morse-counter morse-sequence 0 (map morse dictionary))))))
 
+(deftest test-net-01
+  (solution/clear-cache)
+  (let [morse-sequence "....----"
+        dictionary ["E"
+                    "EE"
+                    "T"
+                    "TT"]]
+    (is (= 25 (solution/indexed-morse-counter morse-sequence 0 (map morse dictionary))))))
+
+(deftest test-net-02
+  (solution/clear-cache)
+  (let [morse-sequence "........."
+        dictionary ["E"
+                    "EEE"]]
+    (is (= 19 (solution/indexed-morse-counter morse-sequence 0 (map morse dictionary))))))
+
 (deftest spaceless-message-test
   (is (= (morse "HELLO") "......-...-..---"))
   (is (= (morse "HELLO" " ") ".... . .-.. .-.. ---")))
-
-(defn test-possible-n [expected-n text dictionary]
-  (is (= expected-n
-         (solution/morse-counter
-           (morse text)
-           0
-           (map morse dictionary)))))
-
-(deftest possible-words-test
-  (testing "simple sequence"
-    (test-possible-n 1 "HELLO" ["HELLO"])
-    (test-possible-n 1 "HELLOWORLD" ["HELLO" "WORLD" "TEST"])
-    (test-possible-n 1 "HELLOWORLDTEST" ["HELLO" "WORLD" "TEST"]))
-  (testing "simple branch"
-    (test-possible-n 2 "HELLOWORLD" ["HELLO" "WORLD" "HELL" "OWORLD"])))
-
-(deftest word-match-test
-  (is (= 4 (solution/word-match "HELLO" "HELL" 0)))
-  (is (= -2 (solution/word-match "HELL" "HELLO" 0)))
-
-  (is (= -1 (solution/word-match "HELLO" "WAZA" 0)))
-
-  (is (= 5 (solution/word-match "HELLOWORLD" "HELLO" 0)))
-  (is (= (count "HELLOWORLD") (solution/word-match "HELLOWORLD" "WORLD" 5))))
-
-(deftest morse-counter-test
-  (is (= 2 (solution/morse-counter (morse "HELLOWORLD")
-                                   0
-                                   (map morse ["HELLO" "WORLD"
-                                               "HELL" "OWORLD"])))))
 
 (deftest index-dictionary-test
   (let [index (solution/index-dictionary ["HELLO" "HELL"])]

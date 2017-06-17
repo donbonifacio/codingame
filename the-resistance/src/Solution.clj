@@ -34,39 +34,6 @@
   #_(binding [*out* *err*]
     (println msg)))
 
-(defn word-match [^String morse-sequence word ^long idx]
-  (loop [word-idx 0
-         morse-idx idx]
-    (cond
-      (>= word-idx (count word))
-        (+ idx word-idx)
-      (>= morse-idx (count morse-sequence))
-        -2
-      (not= (nth morse-sequence morse-idx) (nth word word-idx))
-        -1
-      :else
-        (recur (inc word-idx) (inc morse-idx)))))
-
-(defn morse-counter
-  ([^String morse-sequence ^long curr-idx dictionary]
-   (loop [words dictionary
-         counter 0]
-     (if (not (seq words))
-       counter
-       (let [word (first words)
-             ^long next-idx (word-match morse-sequence word curr-idx)]
-         (cond
-           (= next-idx (count morse-sequence))
-            (do
-              #_(println (swap! branch-counter inc))
-             1)
- 
-           (neg? next-idx)
-             (recur (rest words) counter)
- 
-           :else
-             (recur (rest words) (+ counter (morse-counter morse-sequence next-idx dictionary)))))))))
-
 (def cache (atom {}))
 
 (declare with-indexed-morse-counter)
