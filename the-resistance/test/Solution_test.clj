@@ -5,15 +5,17 @@
 (def morse solution/morse)
 
 (deftest example-test
+  (solution/clear-cache)
   (let [morse-sequence "......-...-..---.-----.-..-..-.."
         dictionary ["HELL"
                     "HELLO"
                     "OWORLD"
                     "WORLD"
                     "TEST"]]
-    (is (= 2 (solution/morse-counter morse-sequence 0 (map morse dictionary))))))
+    (is (= 2 (solution/indexed-morse-counter morse-sequence 0 (map morse dictionary))))))
 
 (deftest test-01
+  (solution/clear-cache)
   (let [morse-sequence "-.-"
         dictionary ["A"
                     "B"
@@ -21,25 +23,27 @@
                     "HELLO"
                     "K"
                     "WORLD"]]
-    (is (= 1 (solution/morse-counter morse-sequence 0 (map morse dictionary))))))
+    (is (= 1 (solution/indexed-morse-counter morse-sequence 0 (map morse dictionary))))))
 
 (deftest test-02
+  (solution/clear-cache)
   (let [morse-sequence "--.-------.."
         dictionary ["GOD"
                     "GOOD"
                     "MORNING"
                     "G"
                     "HELLO"]]
-    (is (= 1 (solution/morse-counter morse-sequence 0 (map morse dictionary))))))
+    (is (= 1 (solution/indexed-morse-counter morse-sequence 0 (map morse dictionary))))))
 
 (deftest test-03
+  (solution/clear-cache)
   (let [morse-sequence "......-...-..---.-----.-..-..-.."
         dictionary ["HELL"
                     "HELLO"
                     "OWORLD"
                     "WORLD"
                     "TEST"]]
-    (is (= 2 (solution/morse-counter morse-sequence 0 (map morse dictionary))))))
+    (is (= 2 (solution/indexed-morse-counter morse-sequence 0 (map morse dictionary))))))
 
 (deftest spaceless-message-test
   (is (= (morse "HELLO") "......-...-..---"))
