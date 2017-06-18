@@ -45,6 +45,16 @@
                     "TEST"]]
     (is (= 2 (solution/indexed-morse-counter morse-sequence 0 (map morse dictionary))))))
 
+(deftest spaceless-message-test
+  (is (= (morse "HELLO") "......-...-..---"))
+  (is (= (morse "HELLO" " ") ".... . .-.. .-.. ---")))
+
+(deftest index-dictionary-test
+  (let [index (solution/index-dictionary ["HELLO" "HELL"])]
+    (is (not (get-in index [\H \E :word?])))
+    (is (true? (get-in index [\H \E \L \L :word?])))
+    (is (true? (get-in index [\H \E \L \L \O :word?])))))
+
 (deftest test-net-01
   (solution/clear-cache)
   (let [morse-sequence "....----"
@@ -61,12 +71,3 @@
                     "EEE"]]
     (is (= 19 (solution/indexed-morse-counter morse-sequence 0 (map morse dictionary))))))
 
-(deftest spaceless-message-test
-  (is (= (morse "HELLO") "......-...-..---"))
-  (is (= (morse "HELLO" " ") ".... . .-.. .-.. ---")))
-
-(deftest index-dictionary-test
-  (let [index (solution/index-dictionary ["HELLO" "HELL"])]
-    (is (not (get-in index [\H \E :word?])))
-    (is (true? (get-in index [\H \E \L \L :word?])))
-    (is (true? (get-in index [\H \E \L \L \O :word?])))))
