@@ -32,9 +32,7 @@
       (and (= target \#) (> occupied 3)) "L"
       :else (str target))))
 
-; (flatten (interpose "\n" (partition n list))))
-
-(defn run
+(defn run-round
   "Runs the algorithm for the given input."
   [input]
   (->> (for [y (range 0 10)
@@ -46,8 +44,22 @@
        (clojure.string/join "\n")))
 
 
+(defn run
+  ([input]
+   (run input 0))
+  ([input round-number]
+   (let [new-round (run-round input)]
+     (println "Round " round-number)
+     (cond
+        (= new-round input)
+          (count (filter #(= % \#) new-round))
+        (> round-number 100)
+          :failure
+        :else
+          (recur new-round (inc round-number))))))
+
 (defn -main
   "The main function, will read data from the stdin and call the worker
   function."
   [& args]
-  (println 1))
+  (println "Seats " (run (slurp "input.txt"))))

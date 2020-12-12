@@ -26,11 +26,53 @@ L.L.L..L..
 #.LLLLLL.L
 #.#LLLL.##")
 
-#_(deftest calculate-next-test
+(def round-three
+"#.##.L#.##
+#L###LL.L#
+L.#.#..#..
+#L##.##.L#
+#.##.LL.LL
+#.###L#.##
+..#.#.....
+#L######L#
+#.LL###L.L
+#.#L###.##")
+
+(def round-four
+"#.#L.L#.##
+#LLL#LL.L#
+L.L.L..#..
+#LLL.##.L#
+#.LL.LL.LL
+#.LL#L#.##
+..L.L.....
+#L#LLLL#L#
+#.LLLLLL.L
+#.#L#L#.##")
+
+(def round-five
+"#.#L.L#.##
+#LLL#LL.L#
+L.#.L..#..
+#L##.##.L#
+#.#L.LL.LL
+#.#L#L#.##
+..L.L.....
+#L#L##L#L#
+#.LLLLLL.L
+#.#L#L#.##")
+
+(deftest calculate-next-test
   (is (= "#" (solution/calculate-next round-one 0 0)))
   (is (= "." (solution/calculate-next round-one 1 0)))
   (is (= "L" (solution/calculate-next round-one 1 1)))
   (is (= "." (solution/calculate-next round-one 3 2))))
 
+(deftest run-round-test
+  (is (= round-two (solution/run-round round-one)))
+  (is (= round-three (solution/run-round round-two)))
+  (is (= round-four (solution/run-round round-three)))
+  (is (= round-five (solution/run-round round-four))))
+
 (deftest run-test
-  (is (= round-two (solution/run round-one))))
+  (is (= 37 (solution/run round-one))))
