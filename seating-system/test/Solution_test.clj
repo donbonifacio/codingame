@@ -63,10 +63,11 @@ L.#.L..#..
 #.#L#L#.##")
 
 (deftest calculate-next-test
-  (is (= "#" (solution/calculate-next round-one 0 0)))
-  (is (= "." (solution/calculate-next round-one 1 0)))
-  (is (= "L" (solution/calculate-next round-one 1 1)))
-  (is (= "." (solution/calculate-next round-one 3 2))))
+  (defn helper [raw x y] (solution/calculate-next (clojure.string/split-lines raw) x y))
+  (is (= "#" (helper round-one 0 0)))
+  (is (= "." (helper round-one 1 0)))
+  (is (= "L" (helper round-one 1 1)))
+  (is (= "." (helper round-one 3 2))))
 
 (deftest run-round-test
   (is (= round-two (solution/run-round round-one)))
