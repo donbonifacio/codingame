@@ -8,6 +8,8 @@ up 3
 down 8
 forward 2".freeze
 
+INPUT_DATA = File.read('./input.txt').freeze
+
 RSpec.describe Day2 do
   context 'when running test instructions' do
     it 'produces expected position factor' do
@@ -21,8 +23,11 @@ RSpec.describe Day2 do
 
   context 'when running input instructions' do
     it 'produces expected position factor' do
-      INPUT_DATA = File.read('./input.txt')
       expect(Day2.position_factor(INPUT_DATA)).to eq(1_507_611)
+    end
+
+    it 'produces expected aimed position factor' do
+      expect(Day2Part2.position_factor(INPUT_DATA)).to eq(1_880_593_125)
     end
   end
 end
