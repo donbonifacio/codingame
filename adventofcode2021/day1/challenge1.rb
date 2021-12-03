@@ -21,16 +21,15 @@ module Day1
 
   def self.rolling_measure_increases(measures)
     index = 0
-    windows = []
+    sums = []
 
     loop do
       current_slice = measures.slice(index, 3)
       break if current_slice.length != 3
-      windows << current_slice
+      sums << current_slice.reduce(&:+)
       index += 1
     end
 
-    sums = windows.map { |window| window.reduce(&:+) }
     measure_increases(sums)
   end
 end
