@@ -14,8 +14,23 @@ module Day1
 
   def self.add_increases(previous, current)
     return 0 if previous.nil?
-    return 0 if previous > current
+    return 0 if previous >= current
 
     1
+  end
+
+  def self.rolling_measure_increases(measures)
+    index = 0
+    windows = []
+
+    loop do
+      current_slice = measures.slice(index, 3)
+      break if current_slice.length != 3
+      windows << current_slice
+      index += 1
+    end
+
+    sums = windows.map { |window| window.reduce(&:+) }
+    measure_increases(sums)
   end
 end
