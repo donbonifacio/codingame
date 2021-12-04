@@ -19,11 +19,19 @@ RSpec.describe Day3 do
     it 'generates expected output' do
       expect(Day3.power_consumption(TEST_DATA)).to eq(198)
     end
+
+    it 'generates expected gas output' do
+      expect(Day3.gas_rating(TEST_DATA)).to eq(230)
+    end
   end
 
   context 'when running input data' do
     it 'generates expected output' do
-      expect(Day3.power_consumption(INPUT_DATA)).to eq(3148794)
+      expect(Day3.power_consumption(INPUT_DATA)).to eq(3_148_794)
+    end
+
+    it 'generates expected gas output' do
+      expect(Day3.gas_rating(INPUT_DATA)).to eq(2795310)
     end
   end
 end
