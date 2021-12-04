@@ -1,5 +1,4 @@
-
-# Solutions for Day 1.1
+# Solutions for Day 3.1
 module Day3
   module_function
 
