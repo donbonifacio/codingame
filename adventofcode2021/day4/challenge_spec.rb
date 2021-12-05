@@ -23,7 +23,7 @@ TEST_BOARDS = "
  2  0 12  3  7".freeze
 
 TEST_DATA = (TEST_DRAW_NUMBERS + TEST_BOARDS).freeze
-# INPUT_DATA = File.read('./input.txt').split(/\s/).map(&:to_i).freeze
+INPUT_DATA = File.read('./input.txt').freeze
 
 RSpec.describe Day4 do
   context 'when working with provided data' do
@@ -43,6 +43,12 @@ RSpec.describe Day4 do
     it 'has expected data for TEST_DATA but for a column win' do
       data = ('24,9,26,6,3'.freeze + TEST_BOARDS).freeze
       expect(Day4.winner_score(data)).to eq(771)
+    end
+  end
+
+  context 'when working with input data' do
+    it 'has expected data for INPUT_DATA' do
+      expect(Day4.winner_score(INPUT_DATA)).to eq(51_034)
     end
   end
 end
