@@ -44,11 +44,19 @@ RSpec.describe Day4 do
       data = ('24,9,26,6,3'.freeze + TEST_BOARDS).freeze
       expect(Day4.winner_score(data)).to eq(771)
     end
+
+    it 'has expected data for TEST_DATA for last winner' do
+      expect(Day4.winner_score(TEST_DATA, :last)).to eq(1924)
+    end
   end
 
   context 'when working with input data' do
     it 'has expected data for INPUT_DATA' do
       expect(Day4.winner_score(INPUT_DATA)).to eq(51_034)
+    end
+
+    it 'has expected data for INPUT_DATA for last winner' do
+      expect(Day4.winner_score(INPUT_DATA, :last)).to eq(5434)
     end
   end
 end

@@ -54,32 +54,52 @@ module Day4
     end
   end
 
-  def winner_score(raw_bingo)
+  def winner_score(raw_bingo, lucky = :first)
     bingo = deserialize(raw_bingo)
-    result = play_until_winner(bingo)
+    result = if lucky == :first
+               play_until_winner(bingo)
+             else
+               play_until_last_winner(bingo)
+             end
+
     raise 'No winner' unless result[:winner]
 
     result[:board].score(result[:winner_number])
   end
 
   def play_until_winner(bingo)
+    play(bingo) do |result|
+      return result
+    end
+  end
+
+  def play_until_last_winner(bingo)
+    winners = []
+    play(bingo) do |result|
+      winners << result if result[:winner]
+    end
+    winners.last
+  end
+
+  def play(bingo)
+    boards = bingo.boards.clone
     bingo.draw_numbers.each do |drawn_number|
       # puts "-- Number: #{drawn_number}"
-      bingo.boards.each do |board|
+      to_delete = []
+      boards.each do |board|
         board.play_number(drawn_number)
         if board.won?
           # puts "Won? #{board.won?} #{board.inspect}"
-          return { winner: true,
-                   board: board,
-                   winner_number: drawn_number }
+          result = { winner: true,
+                     board: board,
+                     winner_number: drawn_number }
+          yield result
+          to_delete << board
         end
       end
+      to_delete.each { |board| boards.delete(board) }
     end
     { winner: false }
-  end
-
-  def board_score(board)
-    1
   end
 
   def deserialize(raw_bingo)
