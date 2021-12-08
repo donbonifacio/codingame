@@ -20,7 +20,7 @@ RSpec.describe Day7 do
     end
 
     it 'has expected result for TEST_DATA for expensive move' do
-      expect(Day7.expensive_fuel_cost(INPUT_DATA)).to eq(168)
+      expect(Day7.expensive_fuel_cost(INPUT_DATA)).to eq(100_148_777)
     end
   end
 end

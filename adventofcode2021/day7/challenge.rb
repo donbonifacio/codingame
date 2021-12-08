@@ -27,6 +27,6 @@ module Day7
 
   def average(array)
     sum = array.sum
-    (sum.to_f / array.length).round
+    (sum.to_f / array.length.to_f).round
   end
 end
