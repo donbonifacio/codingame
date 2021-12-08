@@ -1,4 +1,3 @@
-
 # Solutions for Day 7.1
 module Day7
   module_function
