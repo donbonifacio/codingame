@@ -1,5 +1,7 @@
 require_relative './challenge.rb'
 
+INPUT_DATA = File.read('./input.txt').freeze
+
 RSpec.describe Day6 do
   context 'considering basic scenarios' do
     [
@@ -27,16 +29,28 @@ RSpec.describe Day6 do
       it "grows as expected after one day when starting for #{test_data}" do
         result = Day6.grow_fish(test_data[:scenario])
         expect(result).to eq(test_data[:expected])
+
+        result2 = Day6.optimized_grow_fish(test_data[:scenario])
+        expect(result2[:count]).to eql(result[:count])
       end
+    end
+
+    it 'generates passing result for 256 days' do
+      result = Day6.optimized_grow_fish(initial_state: '3,4,3,1,2', days: 256)
+      expect(result[:count]).to eq(26_984_457_539)
     end
   end
 
   context 'when running input data' do
-    it 'generates passing result' do
-      INPUT_DATA = File.read('./input.txt')
-
+    it 'generates passing result for 80 days' do
       result = Day6.grow_fish(initial_state: INPUT_DATA, days: 80)
-      expect(result[:count]).to eq(386536)
+      expect(result[:count]).to eq(386_536)
+    end
+
+    it 'generates passing result for 256 days' do
+      result = Day6.optimized_grow_fish(initial_state: INPUT_DATA, days: 256)
+      expect(
+        result[:count]).to eq(1_732_821_262_171)
     end
   end
 end
