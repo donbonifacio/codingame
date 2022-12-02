@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-const challengeId = "01"
+const challengeId = "02"
 
 func main() {
 	fmt.Printf("Challenge %v\n", challengeId)
@@ -17,37 +17,27 @@ func sumScore(data string, calculator func(string, string) int) int {
 	sum := 0
 	for _, line := range lines {
 		plays := strings.Split(strings.TrimSpace(line), " ")
-		player1 := plays[0]
-		player2 := plays[1]
-		sum += calculator(player1, player2)
+		sum += calculator(plays[0], plays[1])
 	}
 	return sum
 }
 
-var playScores = map[string]int{
-	"X": 1, // R
-	"Y": 2, // P
-	"Z": 3, // S
-}
 var resultMapPart1 = map[string]int{
-	"AX": 3,
-	"BX": 0,
-	"CX": 6,
+	"AX": 3 + 1,
+	"BX": 0 + 1,
+	"CX": 6 + 1,
 
-	"AY": 6,
-	"BY": 3,
-	"CY": 0,
+	"AY": 6 + 2,
+	"BY": 3 + 2,
+	"CY": 0 + 2,
 
-	"AZ": 0,
-	"BZ": 6,
-	"CZ": 3,
+	"AZ": 0 + 3,
+	"BZ": 6 + 3,
+	"CZ": 3 + 3,
 }
 
 func part1calculator(player1 string, player2 string) int {
-	playScore2 := playScores[player2]
-	resultScore := resultMapPart1[fmt.Sprintf("%v%v", player1, player2)]
-
-	return resultScore + playScore2
+	return resultMapPart1[fmt.Sprintf("%v%v", player1, player2)]
 }
 
 var resultMapPart2 = map[string]string{
