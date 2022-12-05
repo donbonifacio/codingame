@@ -16,7 +16,7 @@ func Test_load(t *testing.T) {
 	cargo := load(data)
 	assert.Equal(t, 3, len(cargo.cranes))
 	assert.Equal(t, 4, len(cargo.operations))
-	assert.Equal(t, Crane{[]string{"M", "C", "D"}}, cargo.cranes[2])
+	assert.Equal(t, Crane{[]string{"M", "C", "D"}}, *cargo.cranes[2])
 	assert.Equal(t, Operation{2, 2, 1}, cargo.operations[2])
 }
 
