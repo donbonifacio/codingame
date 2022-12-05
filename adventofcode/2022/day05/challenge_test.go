@@ -20,7 +20,22 @@ func Test_load(t *testing.T) {
 	assert.Equal(t, Operation{2, 2, 1}, cargo.operations[2])
 }
 
-func Test_part1(t *testing.T) {
-	top := run(readInput("sample.txt"))
+func Test_SamplePart1(t *testing.T) {
+	top := run(readInput("sample.txt"), runOperationsPart1)
 	assert.Equal(t, "CMZ", top)
+}
+
+func Test_InputPart1(t *testing.T) {
+	top := run(readInput("input.txt"), runOperationsPart1)
+	assert.Equal(t, "PTWLTDSJV", top)
+}
+
+func Test_SamplePart2(t *testing.T) {
+	top := run(readInput("sample.txt"), runOperationsPart2)
+	assert.Equal(t, "MCD", top)
+}
+
+func Test_InputPart2(t *testing.T) {
+	top := run(readInput("input.txt"), runOperationsPart2)
+	assert.Equal(t, "WZMFVGGZP", top)
 }

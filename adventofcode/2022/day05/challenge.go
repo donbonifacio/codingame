@@ -15,9 +15,9 @@ func main() {
 }
 
 type Operation struct {
-	quantiy int
-	from    int
-	to      int
+	quantity int
+	from     int
+	to       int
 }
 
 type Crane struct {
@@ -92,24 +92,50 @@ func loadOperations(cargo *Cargo, rawOperations []string) {
 	}
 }
 
-func run(data string) string {
+func run(data string, runOperations func(*Cargo)) string {
 	cargo := load(data)
 	top := []string{}
 
 	runOperations(cargo)
+	//fmt.Printf("Cargo:: %v\n", cargo)
 
-	for _, crane := range cargo.cranes {
+	for i := 1; i < len(cargo.cranes)+1; i++ {
+		crane := cargo.cranes[i]
+		//fmt.Printf("-Crane:: %v\n", crane)
 		top = append(top, crane.stack[len(crane.stack)-1])
 	}
 	return strings.Join(top, "")
 }
 
-func runOperations(cargo *Cargo) {
-	/*
-		for _, operation := range cargo.operations {
-
+func runOperationsPart1(cargo *Cargo) {
+	for _, operation := range cargo.operations {
+		from := cargo.cranes[operation.from]
+		to := cargo.cranes[operation.to]
+		for i := 0; i < operation.quantity; i++ {
+			element := from.stack[len(from.stack)-1]
+			from.stack = from.stack[:len(from.stack)-1]
+			to.stack = append(to.stack, element)
 		}
-	*/
+		cargo.cranes[operation.from] = from
+		cargo.cranes[operation.to] = to
+	}
+}
+
+func runOperationsPart2(cargo *Cargo) {
+	for _, operation := range cargo.operations {
+		from := cargo.cranes[operation.from]
+		fromSize := len(from.stack)
+		to := cargo.cranes[operation.to]
+
+		//fmt.Printf("%v - %v\n", from.stack, operation.quantity)
+		elements := from.stack[fromSize-operation.quantity : fromSize]
+		from.stack = from.stack[:fromSize-operation.quantity]
+		to.stack = append(to.stack, elements...)
+		//fmt.Printf("%v -> %v\n", from.stack, to.stack)
+
+		cargo.cranes[operation.from] = from
+		cargo.cranes[operation.to] = to
+	}
 }
 
 func atoi(raw string) int {
