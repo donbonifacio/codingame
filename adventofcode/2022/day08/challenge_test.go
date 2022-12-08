@@ -23,15 +23,14 @@ func TestPartInput1(t *testing.T) {
 }
 
 func TestVisibleFrom(t *testing.T) {
-	matrix := [][]int{
-		[]int{2, 9, 5, 1, 2},
-		[]int{2, 5, 5, 1, 2},
-		[]int{2, 3, 5, 1, 2},
-	}
-	assert.Equal(t, false, visibleFrom(matrix, 5, []int{1, 1}, []int{-1, 0}))
-	assert.Equal(t, true, visibleFrom(matrix, 5, []int{1, 1}, []int{0, -1}))
-	assert.Equal(t, true, visibleFrom(matrix, 5, []int{1, 1}, []int{1, 0}))
-	assert.Equal(t, false, visibleFrom(matrix, 5, []int{1, 1}, []int{0, 1}))
+	matrix := utils.AsIntMatrix("29512\n25512\n23512")
+	position := utils.Position{X: 1, Y: 1}
+	value := matrix.Value(position)
+
+	assert.Equal(t, false, visibleFrom(matrix, value, position, utils.Vector{X: 0, Y: -1}))
+	assert.Equal(t, true, visibleFrom(matrix, value, position, utils.Vector{X: -1, Y: 0}))
+	assert.Equal(t, true, visibleFrom(matrix, value, position, utils.Vector{X: 0, Y: 1}))
+	assert.Equal(t, false, visibleFrom(matrix, value, position, utils.Vector{X: 1, Y: 0}))
 }
 
 func TestPart2(t *testing.T) {

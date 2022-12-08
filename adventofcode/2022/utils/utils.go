@@ -54,6 +54,81 @@ func MinMax(array []int) (int, int) {
 	return min, max
 }
 
+type IntMatrix struct {
+	data  [][]int
+	SizeX int
+	SizeY int
+}
+
+type Position struct {
+	X int
+	Y int
+}
+
+type Vector struct {
+	X int
+	Y int
+}
+
+func (pos *Position) Move(vector Vector) Position {
+	return Position{pos.X + vector.X, pos.Y + vector.Y}
+}
+
+var VectorsXY = []Vector{
+	{-1, 0},
+	{1, 0},
+	{0, 1},
+	{0, -1},
+}
+
+func EachVectorXY(op func(vector Vector)) {
+	for _, v := range VectorsXY {
+		op(v)
+	}
+}
+
+func (matrix *IntMatrix) Set(pos Position, value int) {
+	matrix.data[pos.Y][pos.X] = value
+}
+
+func (matrix *IntMatrix) Contains(pos Position) bool {
+	return pos.X >= 0 && pos.Y >= 0 && pos.X < matrix.SizeX && pos.Y < matrix.SizeY
+}
+
+func (matrix *IntMatrix) Value(pos Position) int {
+	if !matrix.Contains(pos) {
+		panic(fmt.Sprintf("Matrix doesn't contain position %v - %v", pos, matrix))
+	}
+	return matrix.data[pos.Y][pos.X]
+}
+
+func BuildIntMatrix(sy int, sx int) *IntMatrix {
+	matrix := IntMatrix{SizeX: sx, SizeY: sy}
+	matrix.data = make([][]int, sy)
+	for i := range matrix.data {
+		matrix.data[i] = make([]int, sx)
+		for j := 0; j < sx; j++ {
+			matrix.data[i][j] = 0
+		}
+	}
+	return &matrix
+}
+
+func AsIntMatrix(data string) *IntMatrix {
+	lines := AsLines(data)
+
+	matrix := BuildIntMatrix(len(lines), len(lines[0]))
+
+	for i, line := range lines {
+		digits := Split(line, "")
+		for c, digit := range digits {
+			matrix.Set(Position{c, i}, Atoi(digit))
+		}
+	}
+
+	return matrix
+}
+
 func ReadInput(filename string) string {
 	data, err := os.ReadFile(filename)
 	if err != nil {
