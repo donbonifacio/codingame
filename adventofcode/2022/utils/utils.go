@@ -91,6 +91,23 @@ func (matrix *IntMatrix) Set(pos Position, value int) {
 	matrix.data[pos.Y][pos.X] = value
 }
 
+func (matrix *IntMatrix) Each(op func(pos Position, value int)) {
+	for y := 0; y < matrix.SizeY; y++ {
+		for x := 0; x < matrix.SizeX; x++ {
+			pos := Position{X: x, Y: y}
+			op(pos, matrix.Value(pos))
+		}
+	}
+}
+
+func (matrix *IntMatrix) EachInner(op func(pos Position, value int)) {
+	matrix.Each(func(pos Position, value int) {
+		if pos.X > 0 && pos.Y > 0 && pos.X < matrix.SizeX-1 && pos.Y < matrix.SizeY-1 {
+			op(pos, value)
+		}
+	})
+}
+
 func (matrix *IntMatrix) Contains(pos Position) bool {
 	return pos.X >= 0 && pos.Y >= 0 && pos.X < matrix.SizeX && pos.Y < matrix.SizeY
 }

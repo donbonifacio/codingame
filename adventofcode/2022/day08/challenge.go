@@ -19,20 +19,15 @@ func part1(data string) int {
 
 func visibleFromInside(matrix *utils.IntMatrix) int {
 	sum := 0
-	for y := 1; y < matrix.SizeY-1; y++ {
-		for x := 1; x < matrix.SizeX-1; x++ {
-			pos := utils.Position{X: x, Y: y}
-			visible := false
-			utils.EachVectorXY(func(vector utils.Vector) {
-				visible = visible || visibleFrom(matrix, matrix.Value(pos), pos, vector)
-			})
-			if visible {
-				sum += 1
-			}
-			//fmt.Printf("Pos %v (%v) -> %v\n", []int{x, y}, matrix[x][y], b)
+	matrix.EachInner(func(pos utils.Position, value int) {
+		visible := false
+		utils.EachVectorXY(func(vector utils.Vector) {
+			visible = visible || visibleFrom(matrix, matrix.Value(pos), pos, vector)
+		})
+		if visible {
+			sum += 1
 		}
-	}
-
+	})
 	return sum
 }
 
@@ -59,21 +54,15 @@ func part2(data string) int {
 
 func scenicScore(matrix *utils.IntMatrix) int {
 	max := 0
-	for y := 1; y < matrix.SizeY-1; y++ {
-		for x := 1; x < matrix.SizeX-1; x++ {
-			pos := utils.Position{X: x, Y: y}
-			value := matrix.Value(pos)
-			score := 1
-			utils.EachVectorXY(func(vector utils.Vector) {
-				score *= directionScore(matrix, value, pos, vector, 0)
-			})
-			if score > max {
-				max = score
-			}
-			//fmt.Printf("Pos %v (%v) -> %v (%v, %v, %v, %v)\n", []int{x, y}, matrix[x][y], score, a, b, c, d)
+	matrix.EachInner(func(pos utils.Position, value int) {
+		score := 1
+		utils.EachVectorXY(func(vector utils.Vector) {
+			score *= directionScore(matrix, value, pos, vector, 0)
+		})
+		if score > max {
+			max = score
 		}
-	}
-
+	})
 	return max
 }
 
