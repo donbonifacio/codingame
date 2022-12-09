@@ -56,7 +56,7 @@ func MinMax(array []int) (int, int) {
 }
 
 type IntMatrix struct {
-	data  [][]int
+	Data  [][]int
 	SizeX int
 	SizeY int
 }
@@ -133,7 +133,7 @@ func EachVectorXY(op func(vector Vector)) {
 }
 
 func (matrix *IntMatrix) Set(pos Position, value int) {
-	matrix.data[pos.Y][pos.X] = value
+	matrix.Data[pos.Y][pos.X] = value
 }
 
 func (matrix *IntMatrix) Each(op func(pos Position, value int)) {
@@ -157,20 +157,31 @@ func (matrix *IntMatrix) Contains(pos Position) bool {
 	return pos.X >= 0 && pos.Y >= 0 && pos.X < matrix.SizeX && pos.Y < matrix.SizeY
 }
 
+func (matrix *IntMatrix) ToString() string {
+	writer := new(strings.Builder)
+	for y := 0; y < matrix.SizeY; y++ {
+		for x := 0; x < matrix.SizeX; x++ {
+			writer.WriteString(fmt.Sprintf("%v", matrix.Value(Position{X: x, Y: y})))
+		}
+		writer.WriteString("\n")
+	}
+	return strings.TrimSpace(writer.String())
+}
+
 func (matrix *IntMatrix) Value(pos Position) int {
 	if !matrix.Contains(pos) {
 		panic(fmt.Sprintf("Matrix doesn't contain position %v - %v", pos, matrix))
 	}
-	return matrix.data[pos.Y][pos.X]
+	return matrix.Data[pos.Y][pos.X]
 }
 
 func BuildIntMatrix(sy int, sx int) *IntMatrix {
 	matrix := IntMatrix{SizeX: sx, SizeY: sy}
-	matrix.data = make([][]int, sy)
-	for i := range matrix.data {
-		matrix.data[i] = make([]int, sx)
+	matrix.Data = make([][]int, sy)
+	for i := range matrix.Data {
+		matrix.Data[i] = make([]int, sx)
 		for j := 0; j < sx; j++ {
-			matrix.data[i][j] = 0
+			matrix.Data[i][j] = 0
 		}
 	}
 	return &matrix
