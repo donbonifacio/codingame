@@ -12,17 +12,6 @@ func TestMain(t *testing.T) {
 	assert.Equal(t, 123, 123, "they should be equal")
 }
 
-func TestAdjacent(t *testing.T) {
-	assert.Equal(t, true, adjacent(utils.Position{X: 0, Y: 0}, utils.Position{X: 0, Y: 0}))
-	assert.Equal(t, true, adjacent(utils.Position{X: 1, Y: 0}, utils.Position{X: 0, Y: 0}))
-	assert.Equal(t, true, adjacent(utils.Position{X: 1, Y: 1}, utils.Position{X: 0, Y: 0}))
-
-	assert.Equal(t, true, sideBySide(utils.Position{X: 1, Y: 0}, utils.Position{X: 0, Y: 0}))
-	assert.Equal(t, false, sideBySide(utils.Position{X: 1, Y: 1}, utils.Position{X: 0, Y: 0}))
-	assert.Equal(t, false, sideBySide(utils.Position{X: 0, Y: 0}, utils.Position{X: 0, Y: 0}))
-	assert.Equal(t, false, sideBySide(utils.Position{X: 4, Y: -1}, utils.Position{X: 3, Y: 0}))
-}
-
 func TestSamplePart1(t *testing.T) {
 	data := utils.ReadInput("sample.txt")
 	assert.Equal(t, 13, part1(data))

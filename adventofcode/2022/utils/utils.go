@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"math"
 	"os"
 	"strconv"
 	"strings"
@@ -66,19 +67,63 @@ type Position struct {
 }
 
 type Vector struct {
-	X int
-	Y int
+	X         int
+	Y         int
+	Intensity int
+}
+
+func BuildVector(x int, y int) Vector {
+	return Vector{X: x, Y: y, Intensity: 1}
 }
 
 func (pos *Position) Move(vector Vector) Position {
 	return Position{pos.X + vector.X, pos.Y + vector.Y}
 }
 
+func (pos *Position) IsAdjacent(other Position) bool {
+	return math.Abs(float64(pos.X-other.X)) <= 1 && math.Abs(float64(pos.Y-other.Y)) <= 1
+}
+
+func (pos *Position) IsSideBySide(other Position) bool {
+	return (pos.X == other.X && math.Abs(float64(pos.Y-other.Y)) <= 1 ||
+		pos.Y == other.Y && math.Abs(float64(pos.X-other.X)) <= 1) &&
+		!(pos.X == other.X && pos.Y == other.Y)
+}
+
 var VectorsXY = []Vector{
-	{-1, 0},
-	{1, 0},
-	{0, 1},
-	{0, -1},
+	BuildVector(-1, 0),
+	BuildVector(1, 0),
+	BuildVector(0, 1),
+	BuildVector(0, -1),
+}
+
+var vectorByDir = map[string]Vector{
+	"R": BuildVector(1, 0),
+	"L": BuildVector(-1, 0),
+	"U": BuildVector(0, -1),
+	"D": BuildVector(0, 1),
+}
+
+func GetVectorForDir(dir string) Vector {
+	return vectorByDir[dir]
+}
+
+var VectorsAll = []Vector{
+	BuildVector(-1, 0),
+	BuildVector(1, 0),
+	BuildVector(0, 1),
+	BuildVector(0, -1),
+
+	BuildVector(-1, -1),
+	BuildVector(1, 1),
+	BuildVector(-1, 1),
+	BuildVector(1, -1),
+}
+
+func EachVector(op func(vector Vector)) {
+	for _, v := range VectorsAll {
+		op(v)
+	}
 }
 
 func EachVectorXY(op func(vector Vector)) {
