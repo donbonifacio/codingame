@@ -12,56 +12,20 @@ func main() {
 }
 
 type CPU struct {
-	X     int
-	Cycle int
+	X                   int
+	Cycle               int
+	Screen              *strings.Builder
+	TotalSignalStrength int
 }
 
-func part1(data string) (int, string) {
-	lines := utils.AsLines(data)
-	cpu := CPU{X: 1, Cycle: 0}
-	sum := 0
-	writer := new(strings.Builder)
-
-	for _, line := range lines {
-		//fmt.Printf("%v -> %v\n", line, cpu)
-		parts := utils.Split(line, " ")
-		if parts[0] == "noop" {
-			cpu.Cycle += 1
-			sum += cycleScore(&cpu)
-			writeScreen(writer, &cpu)
-		} else if parts[0] == "addx" {
-			toAdd := utils.Atoi(parts[1])
-			for i := 0; i < 2; i++ {
-				cpu.Cycle += 1
-				writeScreen(writer, &cpu)
-				sum += cycleScore(&cpu)
-			}
-			cpu.X += toAdd
-			//fmt.Printf(" Add %v -> %v,\n", toAdd, cpu)
-		} else {
-			panic("?")
-		}
-	}
-	return sum, writer.String()
+func NewCpu() *CPU {
+	return &CPU{X: 1, Cycle: 0, TotalSignalStrength: 0, Screen: new(strings.Builder)}
 }
 
-var targetCycles = []int{20, 60, 100, 140, 180, 220}
-
-func cycleScore(cpu *CPU) int {
-	for _, val := range targetCycles {
-		if cpu.Cycle == val {
-			//fmt.Printf("----%v\n", cpu)
-			return cpu.Cycle * cpu.X
-		}
-	}
-	return 0
-}
-
-func writeScreen(writer *strings.Builder, cpu *CPU) {
+func (cpu *CPU) writeScreen() {
 	if cpu.Cycle == 0 {
 		return
 	}
-	//Cycle 200 X:38
 	ref := cpu.Cycle % 40
 	if ref == 0 {
 		ref = 40
@@ -70,9 +34,48 @@ func writeScreen(writer *strings.Builder, cpu *CPU) {
 	if ref == cpu.X || ref == cpu.X+2 || ref == cpu.X+1 {
 		toWrite = "#"
 	}
-	writer.WriteString(toWrite)
+	cpu.Screen.WriteString(toWrite)
 	if cpu.Cycle%40 == 0 {
-		writer.WriteString("\n")
+		cpu.Screen.WriteString("\n")
 	}
-	//fmt.Printf("Cycle %v X:%v\n%v\n", cpu.Cycle, cpu.X, writer.String())
+}
+
+func cycleScore(cpu *CPU) int {
+	var targetCycles = map[int]bool{20: true, 60: true, 100: true, 140: true, 180: true, 220: true}
+
+	if _, ok := targetCycles[cpu.Cycle]; ok {
+		return cpu.Cycle * cpu.X
+	}
+	return 0
+}
+
+func (cpu *CPU) ProcessCycle() {
+	cpu.Cycle += 1
+	cpu.TotalSignalStrength += cycleScore(cpu)
+	cpu.writeScreen()
+}
+
+func part1(data string) *CPU {
+	lines := utils.AsLines(data)
+	cpu := NewCpu()
+
+	for _, line := range lines {
+		parts := utils.Split(line, " ")
+		op := ops[parts[0]]
+		op(cpu, parts[1:])
+	}
+	return cpu
+}
+
+var ops = map[string]func(*CPU, []string){
+	"noop": func(cpu *CPU, args []string) {
+		cpu.ProcessCycle()
+	},
+
+	"addx": func(cpu *CPU, args []string) {
+		for i := 0; i < 2; i++ {
+			cpu.ProcessCycle()
+		}
+		cpu.X += utils.Atoi(args[0])
+	},
 }

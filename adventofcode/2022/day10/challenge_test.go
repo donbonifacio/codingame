@@ -23,13 +23,13 @@ func TestMod(t *testing.T) {
 
 func TestSamplePart1(t *testing.T) {
 	data := utils.ReadInput("sample.txt")
-	score, _ := part1(data)
-	assert.Equal(t, 13140, score)
+	cpu := part1(data)
+	assert.Equal(t, 13140, cpu.TotalSignalStrength)
 }
 
 func TestSamplePart2(t *testing.T) {
 	data := utils.ReadInput("sample.txt")
-	_, screen := part1(data)
+	cpu := part1(data)
 	expected := []string{
 		"##..##..##..##..##..##..##..##..##..##..",
 		"###...###...###...###...###...###...###.",
@@ -38,18 +38,18 @@ func TestSamplePart2(t *testing.T) {
 		"######......######......######......####",
 		"#######.......#######.......#######.....",
 	}
-	assert.Equal(t, strings.Join(expected, "\n"), strings.TrimSpace(screen))
+	assert.Equal(t, strings.Join(expected, "\n"), strings.TrimSpace(cpu.Screen.String()))
 }
 
 func TestInputPart1(t *testing.T) {
 	data := utils.ReadInput("input.txt")
-	score, _ := part1(data)
-	assert.Equal(t, 14160, score)
+	cpu := part1(data)
+	assert.Equal(t, 14160, cpu.TotalSignalStrength)
 }
 
 func TestInputPart2(t *testing.T) {
 	data := utils.ReadInput("input.txt")
-	_, screen := part1(data)
+	cpu := part1(data)
 	// RJERPEFC
 	expected := []string{
 		"###....##.####.###..###..####.####..##..",
@@ -59,5 +59,5 @@ func TestInputPart2(t *testing.T) {
 		"#.#..#..#.#....#.#..#....#....#....#..#.",
 		"#..#..##..####.#..#.#....####.#.....##..",
 	}
-	assert.Equal(t, strings.Join(expected, "\n"), strings.TrimSpace(screen))
+	assert.Equal(t, strings.Join(expected, "\n"), strings.TrimSpace(cpu.Screen.String()))
 }
