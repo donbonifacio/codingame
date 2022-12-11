@@ -1,6 +1,7 @@
 package main
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/donbonifacio/codingame/blob/master/adventofcode/2022/utils"
@@ -12,23 +13,15 @@ func TestMain(t *testing.T) {
 	assert.Equal(t, 123, 123, "they should be equal")
 }
 
-func TestBuildMonkeyData(t *testing.T) {
-	data := []string{
-		"Monkey 79:",
-		"Starting items: 75, 98",
-		"Operation: new = old * 19",
-		"Test: divisible by 23",
-		"If true: throw to monkey 2",
-		"If false: throw to monkey 3",
-	}
-	monkey := buildMonkey(data)
-	assert.Equal(t, 79, monkey.id)
-	assert.Equal(t, []int{75, 98}, monkey.items)
-	assert.Equal(t, 2*19, monkey.op(2))
-	assert.Equal(t, true, monkey.test(2*23))
-	assert.Equal(t, false, monkey.test(2*24))
-	assert.Equal(t, 2, monkey.next[true])
-	assert.Equal(t, 3, monkey.next[false])
+func TestScanMonkeyData(t *testing.T) {
+	data := utils.ReadInput("sample.txt")
+	monkeyData := strings.Split(data, "\n\n")[1]
+	monkey := scanMonkey(monkeyData)
+	assert.Equal(t, 1, monkey.id)
+	assert.Equal(t, []int{54, 65, 75, 74}, monkey.items)
+	assert.Equal(t, 2*6, monkey.op(2))
+	assert.Equal(t, 2, monkey.test(2*19))
+	assert.Equal(t, 0, monkey.test(2*18))
 }
 
 func TestSamplePart1(t *testing.T) {

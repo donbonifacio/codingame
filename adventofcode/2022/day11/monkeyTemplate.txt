@@ -1,0 +1,6 @@
+Monkey %d:
+  Starting items: %s
+  Operation: new = old %s %d
+  Test: divisible by %d
+    If true: throw to monkey %d
+    If false: throw to monkey %d
