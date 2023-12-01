@@ -61,8 +61,11 @@ func part1(data string) *CPU {
 
 	for _, line := range lines {
 		parts := utils.Split(line, " ")
-		op := ops[parts[0]]
-		op(cpu, parts[1:])
+		if op, ok := ops[parts[0]]; ok {
+			op(cpu, parts[1:])
+		} else {
+			panic(fmt.Sprintf("Don't know how to process '%v'", line))
+		}
 	}
 	return cpu
 }
