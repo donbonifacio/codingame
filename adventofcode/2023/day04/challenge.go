@@ -19,6 +19,7 @@ type Card struct {
 	numbers []int
 	matches []int
 	worth   int
+	copies  []int
 }
 
 func readInput(filename string) []string {
@@ -72,15 +73,54 @@ func part1(data []string) int {
 	cards = lo.Map(cards, loadMatches)
 	cards = lo.Map(cards, calculateWorth)
 
-	lo.ForEach(cards, func(card Card, _ int) {
-		fmt.Printf("Card %v: matches:%v worth:%v\n", card.id, card.matches, card.worth)
-	})
+	/*
+		lo.ForEach(cards, func(card Card, _ int) {
+			fmt.Printf("Card %v: matches:%v worth:%v\n", card.id, card.matches, card.worth)
+		})
+	*/
 
 	return lo.Reduce(cards, func(agg int, card Card, _ int) int {
 		return agg + card.worth
 	}, 0)
 }
 
+func calculateCopies(card Card, _ int) Card {
+	card.copies = lo.Map(card.matches, func(match int, index int) int {
+		return card.id + index + 1
+	})
+	return card
+}
+
+func gatherInstances(instances map[int]int, allCards []Card, cards []Card, run int) {
+	if run > 2 {
+		//return
+	}
+	for _, card := range cards {
+		id := card.id
+		instances[id] += 1
+		//fmt.Printf("%v +1\n", id)
+		lo.ForEach(card.copies, func(childId int, _ int) {
+			index := childId - 1
+			//fmt.Printf(" --- %v spawn %v:%v\n", id, childId, allCards[index])
+			gatherInstances(instances, allCards, []Card{allCards[index]}, run+1)
+		})
+
+	}
+}
+
 func part2(data []string) int {
-	return 0
+	cards := lo.Map(data, parseCard)
+	cards = lo.Map(cards, loadMatches)
+	cards = lo.Map(cards, calculateCopies)
+
+	instances := map[int]int{}
+	gatherInstances(instances, cards, cards, 0)
+
+	sum := 0
+	for _, v := range instances {
+		sum += v
+		//fmt.Printf("%v: %v\n", k, v)
+	}
+
+	return sum
 }
