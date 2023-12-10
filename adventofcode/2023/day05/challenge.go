@@ -2,17 +2,18 @@ package main
 
 import (
 	"fmt"
+	"math"
 	"os"
 	"regexp"
 	"strings"
 
 	"github.com/donbonifacio/codingame/blob/master/adventofcode/2023/utils"
 	"github.com/samber/lo"
-	"golang.org/x/exp/slices"
 )
 
 func main() {
 	fmt.Printf("Challenge %v\n", utils.Atoi("1"))
+	part2(readInput("input.txt"))
 }
 
 type RangeMap struct {
@@ -40,6 +41,7 @@ type SourceDestinationMap struct {
 type Data struct {
 	seeds []int
 	maps  map[string]SourceDestinationMap
+	cache map[string]int
 }
 
 func readInput(filename string) string {
@@ -56,6 +58,23 @@ func parseSeeds(data *Data, line string) *Data {
 	data.seeds = lo.Map(rawSeeds, func(item string, _ int) int {
 		return utils.Atoi(item)
 	})
+	return data
+}
+
+func parseSeeds2(data *Data, line string) *Data {
+	raw := strings.Split(line, ":")
+	rawSeeds := strings.Split(strings.TrimSpace(raw[1]), " ")
+	intervals := lo.Map(rawSeeds, func(item string, _ int) int {
+		return utils.Atoi(item)
+	})
+	seeds := []int{}
+	for i := 0; i < len(intervals); i += 2 {
+		for s := intervals[i]; s <= intervals[i]+intervals[i+1]; s++ {
+			seeds = append(seeds, s)
+		}
+		break // TODO
+	}
+	data.seeds = seeds
 	return data
 }
 
@@ -99,8 +118,60 @@ func printData(data *Data) {
 			fmt.Printf("%v %v %v\n", rm.destinationStart, rm.sourceStart, rm.rangeLength)
 		}
 		fmt.Println()
+		fmt.Printf("Cache: %v\n", data.cache)
 	}
 	fmt.Println()
+}
+
+func processMap(data *Data, curr string, nextVal int) int {
+	mapper := data.maps[curr]
+	matches := lo.Map(mapper.rangeMaps, func(rm RangeMap, _ int) int {
+		return rm.Map(nextVal)
+	})
+	luckies := lo.Filter(matches, func(val int, _ int) bool {
+		return val >= 0
+	})
+	if len(luckies) > 0 {
+		nextVal = luckies[0]
+	}
+	return nextVal
+	//fmt.Printf("%v: %v ", mapper.destination, nextVal)
+}
+
+func locationFor(data *Data, seed int) int {
+	flow := []string{"seed", "soil", "fertilizer", "water", "light", "temperature", "humidity", "location"}
+	return locationForStep(data, flow, seed)
+}
+
+func locationForStep(data *Data, flow []string, nextVal int) int {
+	curr := flow[0]
+	cacheKey := fmt.Sprintf("%v-%v", curr, nextVal)
+	if location, ok := data.cache[cacheKey]; ok {
+		return location
+	}
+	mapper := data.maps[curr]
+	nextVal = processMap(data, curr, nextVal)
+	if mapper.destination == "location" {
+		return nextVal
+	}
+
+	location := locationForStep(data, flow[1:], nextVal)
+	data.cache[cacheKey] = location
+	return location
+}
+
+func process(data *Data) int {
+	bestLocation := math.MaxInt32
+
+	lo.ForEach(data.seeds, func(seed int, idx int) {
+		location := locationFor(data, seed)
+		if location < bestLocation {
+			bestLocation = location
+		}
+	})
+
+	//printData(data)
+	return bestLocation
 }
 
 func part1(raw string) int {
@@ -111,37 +182,16 @@ func part1(raw string) int {
 		parseMap(data, m)
 	})
 
-	flow := []string{"seed", "soil", "fertilizer", "water", "light", "temperature", "humidity", "location"}
-	locations := []int{}
-
-	lo.ForEach(data.seeds, func(seed int, _ int) {
-		fmt.Printf("seed: %v ", seed)
-		nextVal := seed
-		for _, curr := range flow {
-			mapper := data.maps[curr]
-			matches := lo.Map(mapper.rangeMaps, func(rm RangeMap, _ int) int {
-				return rm.Map(nextVal)
-			})
-			luckies := lo.Filter(matches, func(val int, _ int) bool {
-				return val >= 0
-			})
-			if len(luckies) > 0 {
-				nextVal = luckies[0]
-			}
-			fmt.Printf("%v: %v ", mapper.destination, nextVal)
-			if mapper.destination == "location" {
-				locations = append(locations, nextVal)
-			}
-		}
-		fmt.Println()
-	})
-
-	slices.Sort(locations)
-	fmt.Printf("locations: %v", locations[0])
-	//printData(data)
-	return locations[0]
+	return process(data)
 }
 
-func part2(data string) int {
-	return 0
+func part2(raw string) int {
+	lines := strings.Split(raw, "\n\n")
+	data := &Data{cache: map[string]int{}}
+	data = parseSeeds2(data, lines[0])
+	lo.ForEach(lines[1:], func(m string, _ int) {
+		parseMap(data, m)
+	})
+
+	return process(data)
 }
