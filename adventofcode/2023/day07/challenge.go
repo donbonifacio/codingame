@@ -51,11 +51,48 @@ func setType(handBid HandBid, _ int) HandBid {
 	return handBid
 }
 
+func setTypeJoker(handBid HandBid, _ int) HandBid {
+	handBid.handType = matchTypeJoker(handBid)
+	return handBid
+}
+
 func first(m map[int][]int) []int {
 	for _, v := range m {
 		return v
 	}
 	return nil
+}
+func matchTypeJoker(handBid HandBid) int {
+	if len(handBid.numbers) == 0 {
+		handBid = setNumbersJoker(handBid, 0)
+	}
+	if !strings.Contains(handBid.hand, "J") {
+		return matchType(handBid)
+	}
+	groups := lo.GroupBy(handBid.numbers, func(i int) int {
+		return i
+	})
+	biggerGroup := -1
+	target := -1
+	lo.ForEach(lo.Values(groups), func(group []int, _ int) {
+		if len(group) > biggerGroup && group[0] != 0 {
+			biggerGroup = len(group)
+			target = group[0]
+		}
+	})
+
+	oldNumbers := handBid.numbers
+	newNumbers := lo.ReplaceAll(handBid.numbers, 0, target)
+
+	/*
+		fmt.Println(oldNumbers)
+		fmt.Println(newNumbers)
+		fmt.Println(target)
+	*/
+	handBid.numbers = newNumbers
+	typeWithJoker := matchType(handBid)
+	handBid.numbers = oldNumbers
+	return typeWithJoker
 }
 
 func matchType(handBid HandBid) int {
@@ -98,7 +135,15 @@ func matchType(handBid HandBid) int {
 	return HighCard
 }
 
+func setNumbersJoker(handBid HandBid, _ int) HandBid {
+	return setNumbersFunc(handBid, 0, true)
+}
+
 func setNumbers(handBid HandBid, _ int) HandBid {
+	return setNumbersFunc(handBid, 0, false)
+}
+
+func setNumbersFunc(handBid HandBid, _ int, joker bool) HandBid {
 	// A, K, Q, J, T, 9, 8, 7, 6, 5, 4, 3, or 2
 	handBid.numbers = lo.Map([]byte(handBid.hand), func(b byte, _ int) int {
 		n := -1
@@ -109,7 +154,11 @@ func setNumbers(handBid HandBid, _ int) HandBid {
 		} else if b == 'Q' {
 			n = 12
 		} else if b == 'J' {
-			n = 11
+			if joker {
+				n = 0
+			} else {
+				n = 11
+			}
 		} else if b == 'T' {
 			n = 10
 		} else {
@@ -120,24 +169,25 @@ func setNumbers(handBid HandBid, _ int) HandBid {
 	return handBid
 }
 
+func compareHands(a, b HandBid) bool {
+	if a.handType != b.handType {
+		return a.handType < b.handType
+	}
+	for i := 0; i < len(a.numbers); i++ {
+		c1 := a.numbers[i]
+		c2 := b.numbers[i]
+		if c1 != c2 {
+			return c1 < c2
+		}
+	}
+	return false
+}
+
 func part1(lines []string) int {
 	handBids := lo.Map(lines, parseHandBid)
 	handBids = lo.Map(handBids, setNumbers)
 	handBids = lo.Map(handBids, setType)
-	slices.SortFunc(handBids,
-		func(a, b HandBid) bool {
-			if a.handType != b.handType {
-				return a.handType < b.handType
-			}
-			for i := 0; i < len(a.numbers); i++ {
-				c1 := a.numbers[i]
-				c2 := b.numbers[i]
-				if c1 != c2 {
-					return c1 < c2
-				}
-			}
-			return false
-		})
+	slices.SortFunc(handBids, compareHands)
 
 	winnings := lo.Map(handBids, func(h HandBid, index int) int {
 		fmt.Printf("Hand: %v\n", h.hand)
@@ -149,6 +199,18 @@ func part1(lines []string) int {
 	}, 0)
 }
 
-func part2(data []string) int {
-	return 0
+func part2(lines []string) int {
+	handBids := lo.Map(lines, parseHandBid)
+	handBids = lo.Map(handBids, setNumbersJoker)
+	handBids = lo.Map(handBids, setTypeJoker)
+	slices.SortFunc(handBids, compareHands)
+
+	winnings := lo.Map(handBids, func(h HandBid, index int) int {
+		fmt.Printf("Hand: %v type: %v\n", h.hand, h.handType)
+		return h.bid * (index + 1)
+	})
+
+	return lo.Reduce(winnings, func(agg int, item int, _ int) int {
+		return agg + item
+	}, 0)
 }
