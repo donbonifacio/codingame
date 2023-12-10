@@ -24,7 +24,7 @@ func findRecords(race Race, _ int) int {
 		moving := race.time - i
 		velocity := hold
 		distance := moving * velocity
-		race.distances = append(race.distances, distance)
+		//race.distances = append(race.distances, distance)
 		if distance > race.distance {
 			race.records += 1
 		}
@@ -35,12 +35,11 @@ func findRecords(race Race, _ int) int {
 
 func part1(races []Race) int {
 	records := lo.Map(races, findRecords)
-	fmt.Println(records)
 	return lo.Reduce(records, func(agg int, item int, _ int) int {
 		return agg * item
 	}, 1)
 }
 
-func part2() int {
-	return 0
+func part2(races []Race) int {
+	return part1(races)
 }

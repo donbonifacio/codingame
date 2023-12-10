@@ -24,3 +24,17 @@ func TestMain_input1(t *testing.T) {
 	}
 	assert.Equal(t, part1(races), 2344708, "they should be equal")
 }
+
+func Test_sample2(t *testing.T) {
+	races := []Race{
+		{time: 71530, distance: 940200, distances: []int{}},
+	}
+	assert.Equal(t, part2(races), 71503, "they should be equal")
+}
+
+func Test_input2(t *testing.T) {
+	races := []Race{
+		{time: 44899691, distance: 277113618901768, distances: []int{}},
+	}
+	assert.Equal(t, part1(races), 30125202, "they should be equal")
+}
