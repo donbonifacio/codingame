@@ -25,11 +25,13 @@ type Node struct {
 	id    string
 	left  string
 	right string
+	end   int
 }
 
 type Data struct {
 	directions []string
 	nodes      map[string]Node
+	start      []string
 }
 
 func parseDirections(data *Data, line string) *Data {
@@ -82,6 +84,68 @@ func part1(raw string) int {
 	return turns
 }
 
-func part2(data string) int {
-	return 0
+func parseStart(data *Data) *Data {
+	for _, node := range data.nodes {
+		if strings.HasSuffix(node.id, "A") {
+			data.start = append(data.start, node.id)
+		}
+	}
+	return data
+}
+
+func part2(raw string) int {
+	lines := strings.Split(raw, "\n")
+	data := &Data{
+		directions: []string{},
+		nodes:      map[string]Node{},
+		start:      []string{},
+	}
+	data = parseDirections(data, lines[0])
+	data = parseNodes(data, lines[2:])
+	data = parseStart(data)
+
+	curr := lo.Map(data.start, func(id string, _ int) Node {
+		node := data.nodes[id]
+		return node
+	})
+	//curr = curr[0:1]
+	turns := 0
+	for i := 0; true; i++ {
+		dir := data.directions[i%len(data.directions)]
+		curr = lo.Map(curr, func(node Node, _ int) Node {
+			var newNode Node
+			if dir == "L" {
+				newNode = data.nodes[node.left]
+			} else {
+				newNode = data.nodes[node.right]
+			}
+			if node.end != 0 {
+				newNode.end = node.end
+			}
+			if newNode.end == 0 && strings.HasSuffix(newNode.id, "Z") {
+				newNode.end = turns
+				fmt.Println(newNode)
+			}
+			return newNode
+		})
+		turns += 1
+		ends := lo.Reduce(curr, func(agg []int, item Node, _ int) []int {
+			if item.end != 0 {
+				return append(agg, item.end)
+			}
+			return agg
+		}, []int{})
+
+		//fmt.Println(ends)
+		if len(ends) == len(curr) {
+			fmt.Println(ends)
+			fmt.Println(utils.LCM(ends[0], ends[1:]))
+			break
+		}
+		if i > 1000000 {
+			break
+		}
+	}
+
+	return turns
 }

@@ -21,10 +21,10 @@ func readInput(filename string) *utils.ByteMatrix {
 	return utils.AsByteMatrix(string(data))
 }
 
-func isPart(matrix *utils.ByteMatrix, number int, start utils.Position, end utils.Position) bool {
-	// top line
-	iter := utils.Position{X: start.X - 1, Y: start.Y - 1}
+func checkNumber(gears map[utils.Position][]utils.Position, matrix *utils.ByteMatrix, start utils.Position, end utils.Position, lineAdd int) bool {
+	iter := utils.Position{X: start.X - 1, Y: start.Y + lineAdd}
 	right := utils.GetVectorForDir("R")
+	symbol := false
 	for i := start.X - 1; i <= end.X+1; i++ {
 		if !matrix.Contains(iter) {
 			iter = iter.Move(right)
@@ -32,48 +32,32 @@ func isPart(matrix *utils.ByteMatrix, number int, start utils.Position, end util
 		}
 		value := string(matrix.Value(iter))
 		if value != "." && !IsNumber(value) {
-			//fmt.Printf("  %v is a symbol\n", value)
-			return true
+			symbol = true
+			if value == "*" {
+			}
 		}
 		iter = iter.Move(right)
 	}
+	return symbol
+}
 
-	// bottom line
-	iter = utils.Position{X: start.X - 1, Y: start.Y + 1}
-	for i := start.X - 1; i <= end.X+1; i++ {
-		//fmt.Printf("iter: %v dir: %v\n", iter, right)
-		if !matrix.Contains(iter) {
-			iter = iter.Move(right)
-			continue
-		}
-		value := string(matrix.Value(iter))
-		if value != "." && !IsNumber(value) {
-			//fmt.Printf("  %v is a symbol\n", value)
-			return true
-		}
-		iter = iter.Move(right)
+func isPart(gears map[utils.Position][]utils.Position, matrix *utils.ByteMatrix, number int, start utils.Position, end utils.Position) bool {
+	if checkNumber(gears, matrix, start, end, -1) {
+		return true
+	}
+	if checkNumber(gears, matrix, start, end, 1) {
+		return true
 	}
 
-	// sides
-	side1 := utils.Position{X: start.X - 1, Y: start.Y}
-	if matrix.Contains(side1) {
-		value := string(matrix.Value(side1))
-		if value != "." && !IsNumber(value) {
-			return true
-		}
-	}
-	side2 := utils.Position{X: end.X + 1, Y: end.Y}
-	if matrix.Contains(side2) {
-		value := string(matrix.Value(side2))
-		if value != "." && !IsNumber(value) {
-			return true
-		}
+	if checkNumber(gears, matrix, start, end, 0) {
+		return true
 	}
 
 	return false
 }
 
 func part1(matrix *utils.ByteMatrix) int {
+	gears := map[utils.Position][]utils.Position{}
 	numbers := []int{}
 	for y := 0; y < matrix.SizeY; y++ {
 		rawNumber := ""
@@ -93,7 +77,7 @@ func part1(matrix *utils.ByteMatrix) int {
 				rawNumber = ""
 				endPos = utils.Position{X: x - 1, Y: y}
 				//fmt.Printf("%v -> %v : %v\n", number, startPos, endPos)
-				if isPart(matrix, number, startPos, endPos) {
+				if isPart(gears, matrix, number, startPos, endPos) {
 					numbers = append(numbers, number)
 				} else {
 					//fmt.Printf("Not part: %v\n", number)
