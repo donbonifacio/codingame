@@ -72,12 +72,23 @@ func extrapolate(lines []Line) []Line {
 	return lines
 }
 
+func extrapolateLeft(lines []Line) []Line {
+	lo.Map(lines, func(line Line, _ int) Line {
+		for i := len(line.iterations) - 2; i >= 0; i-- {
+			iteration := line.iterations[i]
+			previousIteration := line.iterations[i+1]
+			value := iteration[0] - previousIteration[0]
+			newIteration := append([]int{value}, line.iterations[i]...)
+			line.iterations[i] = newIteration
+		}
+		return line
+	})
+	return lines
+}
+
 func printIterations(lines []Line) {
 	for _, line := range lines {
-		l, _ := lo.Last(line.iterations[0])
-		if l != 33552991 {
-			continue
-		}
+		fmt.Println("--")
 		for i, iteration := range line.iterations {
 			for s := 0; s < i+1; s++ {
 				fmt.Printf(" ")
@@ -101,5 +112,13 @@ func part1(data []string) int {
 }
 
 func part2(data []string) int {
-	return 0
+	lines := parseData(data)
+	lines = generateIterations(lines)
+	lines = extrapolateLeft(lines)
+	extrapolations := lo.Map(lines, func(line Line, _ int) int {
+		fmt.Printf("%v ", line.iterations[0][0])
+		return line.iterations[0][0]
+	})
+	printIterations(lines)
+	return utils.Sum(extrapolations)
 }
