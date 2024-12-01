@@ -23,7 +23,7 @@ func readInput(filename string) []string {
 	return utils.AsLines(string(data))
 }
 
-func part1(data []string) int {
+func extractArrays(data []string) ([]int, []int) {
 	var left []int
 	var right []int
 	for _, line := range data {
@@ -33,6 +33,11 @@ func part1(data []string) int {
 		left = append(left, leftNum)
 		right = append(right, rightNum)
 	}
+	return left, right
+}
+
+func part1(data []string) int {
+	left, right := extractArrays(data)
 	sort.Ints(left)
 	sort.Ints(right)
 	sum := 0
@@ -43,10 +48,20 @@ func part1(data []string) int {
 		}
 		sum += diff
 	}
-	fmt.Printf("sum %d\n", sum)
 	return sum
 }
 
 func part2(data []string) int {
-	return 0
+	left, right := extractArrays(data)
+	sum := 0
+	for _, leftNum := range left {
+		count := 0
+		for _, rightNum := range right {
+			if leftNum == rightNum {
+				count++
+			}
+		}
+		sum += leftNum * count
+	}
+	return sum
 }
