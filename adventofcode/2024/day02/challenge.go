@@ -50,6 +50,14 @@ func isSafe(report []string, allowedBadLevels int) bool {
 		//fmt.Printf("::: %s - %s = %d :", curr, prev, diff)
 		if diff < 0 && dir > 0 || diff > 0 && dir < 0 {
 			fmt.Println("false by dir ", diff, dir)
+			if allowedBadLevels > 0 {
+				fmt.Printf("--- %v - %v ----\n", report[:i], report[i+1:])
+				newReport := append([]int{}, report[:i]..., report[i+1:]...)
+				fmt.Printf("--- %v - %v - %v ----\n", report[:i], report[i+1:], newReport)
+				newReport2 := append(report[:i-1], report[i:]...)
+				fmt.Printf("--- newReport: %v newReport2: %v index: %v ----\n", newReport, newReport2, i)
+				return isSafe(newReport, 0) || isSafe(newReport2, 0)
+			}
 			return false
 		}
 		if diff < 0 {
@@ -57,6 +65,12 @@ func isSafe(report []string, allowedBadLevels int) bool {
 		}
 		if diff < 1 || diff > 3 {
 			badLevels++
+			if allowedBadLevels > 0 {
+				newReport := append(report[:i], report[i+1:]...)
+				return isSafe(newReport, 0)
+			}
+			fmt.Println("false by levels ", diff)
+			return false
 		}
 		prev = curr
 	}
