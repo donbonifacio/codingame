@@ -24,7 +24,7 @@ func part1(data []string) int {
 	count := 0
 	for _, line := range data {
 		report := strings.Fields(line)
-		if isSafe(report) {
+		if isSafe(report, 0) {
 			count++
 		}
 
@@ -32,11 +32,12 @@ func part1(data []string) int {
 	return count
 }
 
-func isSafe(report []string) bool {
+func isSafe(report []string, allowedBadLevels int) bool {
 	fmt.Print("Report:", report)
 	prev := report[0]
 	firstDiff := false
 	dir := 1
+	badLevels := 0
 	for i := 1; i < len(report); i++ {
 		curr := report[i]
 		diff := utils.Atoi(prev) - utils.Atoi(curr)
@@ -55,16 +56,23 @@ func isSafe(report []string) bool {
 			diff = -diff
 		}
 		if diff < 1 || diff > 3 {
-			fmt.Println("false by diff ", diff, dir)
-			return false
+			badLevels++
 		}
 		prev = curr
 	}
 
-	fmt.Println("true", dir)
-	return true
+	fmt.Println("true", badLevels, badLevels <= allowedBadLevels)
+	return badLevels <= allowedBadLevels
 }
 
 func part2(data []string) int {
-	return 0
+	count := 0
+	for _, line := range data {
+		report := strings.Fields(line)
+		if isSafe(report, 1) {
+			count++
+		}
+
+	}
+	return count
 }
