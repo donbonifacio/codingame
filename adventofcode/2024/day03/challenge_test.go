@@ -15,5 +15,9 @@ func TestMain_input1(t *testing.T) {
 }
 
 func Test_sample2(t *testing.T) {
-	assert.Equal(t, part2(readInput("sample.txt")), 48, "they should be equal")
+	assert.Equal(t, part2(readInput("sample2.txt")), 48, "they should be equal")
+}
+
+func Test_input2(t *testing.T) {
+	assert.Equal(t, part2(readInput("input.txt")), 48, "they should be equal")
 }
